@@ -32,6 +32,8 @@ with open(os.path.join(__location__, 'Titanic.csv')) as f:
     rows = csv.DictReader(f)
     for r in rows:
         titanic.append(dict(r))
+
+
 class DB:
     def __init__(self):
         self.database = []
@@ -44,13 +46,16 @@ class DB:
             if table.table_name == table_name:
                 return table
         return None
-    
+
+
 import copy
+
+
 class Table:
     def __init__(self, table_name, table):
         self.table_name = table_name
         self.table = table
-    
+
     def join(self, other_table, common_key):
         joined_table = Table(self.table_name + '_joins_' + other_table.table_name, [])
         for item1 in self.table:
@@ -61,20 +66,20 @@ class Table:
                     dict1.update(dict2)
                     joined_table.table.append(dict1)
         return joined_table
-    
+
     def filter(self, condition):
         filtered_table = Table(self.table_name + '_filtered', [])
         for item1 in self.table:
             if condition(item1):
                 filtered_table.table.append(item1)
         return filtered_table
-    
+
     def aggregate(self, function, aggregation_key):
         temps = []
         for item1 in self.table:
             temps.append(float(item1[aggregation_key]))
         return function(temps)
-    
+
     def select(self, attributes_list):
         temps = []
         for item1 in self.table:
@@ -88,14 +93,23 @@ class Table:
     def __str__(self):
         return self.table_name + ':' + str(self.table)
 
+
 table1 = Table('cities', cities)
 table2 = Table('countries', countries)
+table3 = Table('players', players)
+table4 = Table('teams', teams)
+table5 = Table('titanic', titanic)
+
 my_DB = DB()
 my_DB.insert(table1)
 my_DB.insert(table2)
+my_DB.insert(table3)
+my_DB.insert(table4)
+my_DB.insert(table5)
 my_table1 = my_DB.search('cities')
+my_table3 = my_DB.search('players')
 
-print("Test filter: only filtering out cities in Italy") 
+print("Test filter: only filtering out cities in Italy")
 my_table1_filtered = my_table1.filter(lambda x: x['country'] == 'Italy')
 print(my_table1_filtered)
 print()
@@ -109,11 +123,11 @@ print("Calculting the average temperature without using aggregate for cities in 
 temps = []
 for item in my_table1_filtered.table:
     temps.append(float(item['temperature']))
-print(sum(temps)/len(temps))
+print(sum(temps) / len(temps))
 print()
 
 print("Calculting the average temperature using aggregate for cities in Italy")
-print(my_table1_filtered.aggregate(lambda x: sum(x)/len(x), 'temperature'))
+print(my_table1_filtered.aggregate(lambda x: sum(x) / len(x), 'temperature'))
 print()
 
 print("Test join: finding cities in non-EU countries whose temperatures are below 5.0")
@@ -136,5 +150,6 @@ print("Print the min and max latitude for cities in every country")
 for item in my_table2.table:
     my_table1_filtered = my_table1.filter(lambda x: x['country'] == item['country'])
     if len(my_table1_filtered.table) >= 1:
-        print(item['country'], my_table1_filtered.aggregate(lambda x: min(x), 'latitude'), my_table1_filtered.aggregate(lambda x: max(x), 'latitude'))
+        print(item['country'], my_table1_filtered.aggregate(lambda x: min(x), 'latitude'),
+              my_table1_filtered.aggregate(lambda x: max(x), 'latitude'))
 print()
