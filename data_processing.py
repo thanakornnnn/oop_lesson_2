@@ -227,3 +227,18 @@ survival_female = (survived_female / len(female.table))*100
 #
 print("Survival rate for male passengers:", survival_male)
 print("Survival rate for female passengers:", survival_female)
+
+print()
+print('========== task3 ==========')
+print()
+print('#: Find the total number of male passengers embarked at Southampton')
+print()
+male = table5.filter(lambda x: x['gender'] == 'M')
+#  and x['embarked'] = 'Southampton'
+embarked_male = male.filter(lambda x: x['embarked'] == 'Southampton')
+embarked_count = 0
+for item in embarked_male.table:
+    if item['embarked'] == 'Southampton':
+        embarked_count += 1
+# total_male = embarked_male.aggregate(lambda x: sum(x) / len(x), 'embarked')
+print(embarked_count)
